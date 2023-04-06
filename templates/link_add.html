@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Add Link{% endblock %}
+{% block menu %}
+<li><a href="{{url_for('links')}}">Ссылки</a></li>
+<li class="is-active"><a>Новая ссылка</a></li>
+{% endblock %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/req_get_title.js') }}"></script>
+
+<form action="" method="post" novalidate>
+    {{ link_form.hidden_tag() }}
+    <div class="grid-x grid-padding-x grid-padding-y">
+        <div class="auto cell">
+            <div class="grid-x grid-padding-x">
+                <div class="large-12 cell">
+                    {{ link_form.link.label }}
+                    {{ link_form.link(type="textarea", rows="3") }}
+                    {% for error in link_form.link.errors %}
+                    <div class="callout alert">{{ error}}</div>
+                    {% endfor %}
+                </div>
+                <div class="large-12 cell">
+                    {{ link_form.title.label }}
+                    {{ link_form.title(type="textarea", rows="3") }}
+                    {% for error in link_form.title.errors %}
+                    <div class="callout alert">{{ error}}</div>
+                    {% endfor %}
+                </div>
+                <div class="large-12 cell text-right">
+                    <button class='hollow small button' type='button' id='{{link_form.title.name}}_btn'
+                            onclick='req_get_title(id)'>Получить заголовок
+                    </button>
+                </div>
+                <div class="large-12 cell">
+                    {{ link_form.comment.label }}
+                    {{ link_form.comment(type="textarea", rows="3") }}
+                </div>
+                <div class="large-12 cell text-centre">
+                    {{ link_form.link_submit(type="submit", class="button success", value='Сохранить')}}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

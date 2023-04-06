@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Links{% endblock %}
+{% block menu %}
+<li class="is-active"><a>Ссылки</a></li>
+<li><a href="{{url_for('links_manage')}}">Новая Ссылка</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="grid-x grid-padding-x grid-padding-y">
+    <div class="large-3 medium-3 cell">
+        <p>ПОИСК</p>
+        <form action="" method="post" novalidate>
+            {{ search_form.hidden_tag() }}
+            <div class="grid-container">
+                <div class="grid-x grid-padding-x">
+                    <div class="large-12 cell">
+                        {{ search_form.link.label }}
+                        {{ search_form.link(type="text") }}
+                    </div>
+                    <div class="large-12 cell">
+                        {{ search_form.title.label }}
+                        {{ search_form.title(type="text") }}
+                    </div>
+                    <div class="large-12 cell">
+                        {{ search_form.comment.label }}
+                        {{ search_form.comment(type="text") }}
+                    </div>
+                    <div class="large-12 cell text-center">
+                        {{ search_form.search_submit(type="submit", class='hollow small button', value='Найти') }}
+                        {% if report_msg %}
+                        <div class="callout warning">{{ report_msg }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="auto cell">
+        {% for link in links %}
+        <table class="unstripted text-left">
+            <tbody>
+            <tr>
+                <th width="100">Ссылка</th>
+                <td><a href="{{ link.link }}">{{ link.link }}</a></td>
+            </tr>
+            <tr>
+                <th width="100">Заголовок</th>
+                <td>{{ link.title }}</td>
+            </tr>
+            <tr>
+                <th width="100">Комментарий</th>
+                <td>{{ link.comment }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="table_menu">
+                    <a href="/link_edit/{{ link.id }}" style="margin-left: 15px;"><img
+                            src="{{ url_for('static', filename='icon/edit.png') }}"/></a>
+                    <a href="/link_delete/{{ link.id }}" style="margin-left: 15px;"><img
+                            src="{{ url_for('static', filename='icon/delete.png') }}"/></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        {% endfor %}
+        {{ pagination.links }}
+    </div>
+    <div class="auto cell">
+        <div class="grid-x grid-padding-x">
+            <div class="large-3 large-offset-9 cell text-right">
+                <select onchange="window.location.href = this.options[this.selectedIndex].value">
+                    {% if order=='desc' %}
+                    <option value="{{ url_for('set_sort', order='desc') }}" selected>новые сверху</option>
+                    <option value="{{ url_for('set_sort', order='asc') }}">старые сверху</option>
+                    {% else %}
+                    <option value="{{ url_for('set_sort', order='desc') }}">новые сверху</option>
+                    <option value="{{ url_for('set_sort', order='asc') }}" selected>старые сверху</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
