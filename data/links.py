@@ -1,5 +1,7 @@
 from datetime import datetime
 import sqlalchemy
+from sqlalchemy import orm
+
 
 from .db_session import SqlAlchemyBase
 
@@ -14,3 +16,7 @@ class Link(SqlAlchemyBase):
     comment = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.Date,
                                      default=datetime.now().date)
+
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
+    user = orm.relationship('User')

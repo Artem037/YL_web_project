@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, abort
 from forms.link_forms import LinkForm, LinkFormSearch
+from forms.LoginForm import LoginForm
+from forms.RegisterForm import RegisterForm
+from data.users import User
 from sqlalchemy import and_, desc, asc
+from flask_login import LoginManager, login_user
 
 from data.links import Link
 
@@ -12,10 +16,19 @@ from data import db_session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 db_session.global_init("db/db.db")
 
 db_sess = db_session.create_session()
 
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 @app.route('/set_sort')
 def set_sort():
@@ -106,6 +119,44 @@ def links_manage(link_id=None):
             return redirect('/')
     return render_template('link_add.html', link_id=link_id, link_form=link_form)
 
+
+@app.route('/register', methods=['GET', 'POST'])
+def reqister():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Пароли не совпадают")
+        db_sess = db_session.create_session()
+        if db_sess.query(User).filter(User.email == form.email.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Такой пользователь уже есть")
+        user = User(
+            nickname=form.nickname.data,
+            email=form.email.data
+        )
+        user.set_password(form.password.data)
+        db_sess.add(user)
+        db_sess.commit()
+        return redirect('/login')
+    return render_template('register.html', title='Регистрация', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
 
 @app.route('/link_delete/<int:link_id>')
 def link_delete(link_id):
