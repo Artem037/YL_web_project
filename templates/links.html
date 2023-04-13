@@ -4,7 +4,9 @@
 {% block title %}Links{% endblock %}
 {% block menu %}
 <li class="is-active"><a>Ссылки</a></li>
-<li><a href="{{url_for('links_manage')}}">Новая Ссылка</a></li>
+{% if current_user.is_authenticated %}
+    <li><a href="{{url_for('link_add')}}">Новая Ссылка</a></li>
+{% endif %}
 {% endblock %}
 
 {% block content %}

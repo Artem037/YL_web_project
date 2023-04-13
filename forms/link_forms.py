@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, SubmitField, StringField
+from wtforms import TextAreaField, SubmitField, StringField, BooleanField
 from wtforms.validators import DataRequired, URL
 
 
@@ -7,6 +7,7 @@ class LinkForm(FlaskForm):
     link = TextAreaField('Ссылка:', validators=[DataRequired(), URL(message="Неправильный формат ссылки")])
     title = TextAreaField('Заголовок:', validators=[DataRequired()])
     comment = TextAreaField('Комментарий:')
+    is_private = BooleanField("Личное")
 
     link_submit = SubmitField()
 

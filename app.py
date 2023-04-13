@@ -4,7 +4,7 @@ from forms.LoginForm import LoginForm
 from forms.RegisterForm import RegisterForm
 from data.users import User
 from sqlalchemy import and_, desc, asc
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from data.links import Link
 
@@ -83,41 +83,77 @@ def links():
                            pagination=pagination, order=order)
 
 
-@app.route('/link_add', methods=['POST', 'GET'])
-@app.route('/link_edit/<int:link_id>', methods=['POST', 'GET'])
-def links_manage(link_id=None):
+@app.route('/links', methods=['POST', 'GET'])
+@login_required
+def link_add():
+    link_form = LinkForm()
+    if link_form.validate_on_submit():
+        db_sess = db_session.create_session()
+        Links = Link()
+        Links.link = link_form.link.data
+        Links.title = link_form.title.data
+        Links.comment = link_form.comment.data
+        Links.is_private = link_form.is_private.data
+        current_user.news.append(Links)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('link_add.html', title='Добавление ссылки',
+                           link_form=link_form)
+
+
+
+
+@app.route('/links/<int:link_id>', methods=['POST', 'GET'])
+@login_required
+def link_edit(link_id):
     link_form = LinkForm()
 
-    if request.method == 'GET' and link_id:
-        link = db_sess.query(Link).filter(Link.id == link_id).first()
+    if request.method == 'GET':
+        db_sess = db_session.create_session()
+        link = db_sess.query(Link).filter(Link.id == link_id, Link.user == current_user).first()
         if link:
             link_form.link.data = link.link
             link_form.title.data = link.title
             link_form.comment.data = link.comment
+            link_form.is_private.data = link.is_private
         else:
             abort(404)
-
-    if request.method == 'POST':
-        if link_form.validate_on_submit():
-            if link_id:
-                # изменение данных ссылки в БД
-                link = db_sess.query(Link).filter(Link.id == link_id).first()
-                if link:
-                    link.link = urllib.parse.unquote(link_form.link.data)
-                    link.title = link_form.title.data
-                    link.comment = link_form.comment.data
-                else:
-                    abort(404)
-            else:
-                # Добавление данных ссылки к бд
-                link = Link(
-                    link=urllib.parse.unquote(link_form.link.data),
-                    title=link_form.title.data,
-                    comment=link_form.comment.data)
-                db_sess.add(link)
+    if link_form.validate_on_submit():
+        db_sess = db_session.create_session()
+        link = db_sess.query(Link).filter(Link.id == link_id,
+                                          Link.user == current_user
+                                          ).first()
+        if link:
+            link.link = link_form.link.data
+            link.title = link_form.title.data
+            link.comment = link_form.comment.data
+            link.is_private = link_form.is_private.data
             db_sess.commit()
             return redirect('/')
-    return render_template('link_add.html', link_id=link_id, link_form=link_form)
+        else:
+            abort(404)
+    # if request.method == 'POST':
+    #     if link_form.validate_on_submit():
+    #         if link_id:
+    #             # изменение данных ссылки в БД
+    #             link = db_sess.query(Link).filter(Link.id == link_id).first()
+    #             if link:
+    #                 link.link = urllib.parse.unquote(link_form.link.data)
+    #                 link.title = link_form.title.data
+    #                 link.comment = link_form.comment.data
+    #             else:
+    #                 abort(404)
+    #         else:
+    #             # Добавление данных ссылки к бд
+    #             link = Link(
+    #                 link=urllib.parse.unquote(link_form.link.data),
+    #                 title=link_form.title.data,
+    #                 comment=link_form.comment.data)
+    #             db_sess.add(link)
+    #         db_sess.commit()
+    #         return redirect('/')
+    return render_template('link_add.html', title='Редактирование ссылки', link_form=link_form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -157,6 +193,14 @@ def login():
                                message="Неправильный логин или пароль",
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
 
 @app.route('/link_delete/<int:link_id>')
 def link_delete(link_id):
