@@ -42,30 +42,34 @@
 
     <div class="auto cell">
         {% for link in links %}
-        <table class="unstripted text-left">
-            <tbody>
-            <tr>
-                <th width="100">Ссылка</th>
-                <td><a href="{{ link.link }}">{{ link.link }}</a></td>
-            </tr>
-            <tr>
-                <th width="100">Заголовок</th>
-                <td>{{ link.title }}</td>
-            </tr>
-            <tr>
-                <th width="100">Комментарий</th>
-                <td>{{ link.comment }}</td>
-            </tr>
-            <tr>
-                <td colspan="2" class="table_menu">
-                    <a href="/link_edit/{{ link.id }}" style="margin-left: 15px;"><img
-                            src="{{ url_for('static', filename='icon/edit.png') }}"/></a>
-                    <a href="/link_delete/{{ link.id }}" style="margin-left: 15px;"><img
-                            src="{{ url_for('static', filename='icon/delete.png') }}"/></a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            {% if link.is_private == False or (link.is_private and current_user.is_authenticated and current_user == link.user) %}
+                <table class="text-left">
+                    <tbody>
+                    <tr>
+                        <th width="100">Ссылка</th>
+                        <td class="link"><a class="link" href="{{ link.link }}">{{ link.link }}</a></td>
+                    </tr>
+                    <tr>
+                        <th width="100">Заголовок</th>
+                        <td>{{ link.title }}</td>
+                    </tr>
+                    <tr>
+                        <th width="100">Комментарий</th>
+                        <td>{{ link.comment }}</td>
+                    </tr>
+                    {% if current_user.is_authenticated and current_user == link.user %}
+                        <tr>
+                            <td colspan="2" class="table_menu">
+                                <a href="/links/{{ link.id }}" style="margin-left: 15px;"><img
+                                        src="{{ url_for('static', filename='icon/edit.png') }}"/></a>
+                                <a href="/link_delete/{{ link.id }}" style="margin-left: 15px;"><img
+                                        src="{{ url_for('static', filename='icon/delete.png') }}"/></a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            {% endif %}
         {% endfor %}
         {{ pagination.links }}
     </div>

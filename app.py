@@ -94,7 +94,7 @@ def link_add():
         Links.title = link_form.title.data
         Links.comment = link_form.comment.data
         Links.is_private = link_form.is_private.data
-        current_user.news.append(Links)
+        current_user.links.append(Links)
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
@@ -107,6 +107,7 @@ def link_add():
 @app.route('/links/<int:link_id>', methods=['POST', 'GET'])
 @login_required
 def link_edit(link_id):
+    print(link_id)
     link_form = LinkForm()
 
     if request.method == 'GET':
@@ -118,6 +119,7 @@ def link_edit(link_id):
             link_form.comment.data = link.comment
             link_form.is_private.data = link.is_private
         else:
+            print(11111111111)
             abort(404)
     if link_form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -132,6 +134,7 @@ def link_edit(link_id):
             db_sess.commit()
             return redirect('/')
         else:
+            print(2222222222)
             abort(404)
     # if request.method == 'POST':
     #     if link_form.validate_on_submit():
