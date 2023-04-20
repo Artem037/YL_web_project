@@ -53,9 +53,19 @@
                         <th width="100">Заголовок</th>
                         <td>{{ link.title }}</td>
                     </tr>
+                    {% if link.comment %}
                     <tr>
                         <th width="100">Комментарий</th>
                         <td>{{ link.comment }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th width="100">Автор</th>
+                        <td>{{link.user.nickname}}</td>
+                    </tr>
+                    <tr>
+                        <th width="100">Дата написания</th>
+                        <td>{{link.created_date}}</td>
                     </tr>
                     {% if current_user.is_authenticated and current_user == link.user %}
                         <tr>
