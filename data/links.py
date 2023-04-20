@@ -2,7 +2,6 @@ from datetime import datetime
 import sqlalchemy
 from sqlalchemy import orm
 
-
 from .db_session import SqlAlchemyBase
 
 
@@ -14,6 +13,7 @@ class Link(SqlAlchemyBase):
     link = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     comment = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
+    category = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     created_date = sqlalchemy.Column(sqlalchemy.Date,
                                      default=datetime.now().date)

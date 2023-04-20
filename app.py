@@ -8,7 +8,6 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 
 from data.links import Link
 
-import urllib.parse
 from flask_paginate import Pagination, get_page_parameter
 from flask import session as sess_client
 
@@ -29,6 +28,7 @@ db_sess = db_session.create_session()
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
+
 
 @app.route('/set_sort')
 def set_sort():
@@ -54,7 +54,7 @@ def links():
     if request.method == 'GET':
         page = request.args.get(get_page_parameter(), type=int, default=1)
 
-        limit = 2
+        limit = 5
         total = db_sess.query(Link).count()
 
         offset = (page - 1) * limit
@@ -72,7 +72,7 @@ def links():
 
     elif request.method == 'POST':
         search_values = [(key, val) for key, val in search_form.data.items() if
-                         key in ['link', 'title', 'comment'] and val.strip()]
+                         key in ['link', 'title', 'comment', "category"] and val.strip()]
 
         if search_values:
             links = db_sess.query(Link).filter(
@@ -93,6 +93,7 @@ def link_add():
         Links.link = link_form.link.data
         Links.title = link_form.title.data
         Links.comment = link_form.comment.data
+        Links.category = link_form.category.data
         Links.is_private = link_form.is_private.data
         current_user.links.append(Links)
         db_sess.merge(current_user)
@@ -100,8 +101,6 @@ def link_add():
         return redirect('/')
     return render_template('link_add.html', title='Добавление ссылки',
                            link_form=link_form)
-
-
 
 
 @app.route('/links/<int:link_id>', methods=['POST', 'GET'])
@@ -117,9 +116,9 @@ def link_edit(link_id):
             link_form.link.data = link.link
             link_form.title.data = link.title
             link_form.comment.data = link.comment
+            link_form.category.data = link.category
             link_form.is_private.data = link.is_private
         else:
-            print(11111111111)
             abort(404)
     if link_form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -130,11 +129,11 @@ def link_edit(link_id):
             link.link = link_form.link.data
             link.title = link_form.title.data
             link.comment = link_form.comment.data
+            link.category = link_form.category.data
             link.is_private = link_form.is_private.data
             db_sess.commit()
             return redirect('/')
         else:
-            print(2222222222)
             abort(404)
     # if request.method == 'POST':
     #     if link_form.validate_on_submit():

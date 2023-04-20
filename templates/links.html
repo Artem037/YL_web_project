@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-
 {% block title %}Links{% endblock %}
 {% block menu %}
 <li class="is-active"><a>Ссылки</a></li>
@@ -28,6 +27,10 @@
                     <div class="large-12 cell">
                         {{ search_form.comment.label }}
                         {{ search_form.comment(type="text") }}
+                    </div>
+                    <div class="large-12 cell">
+                        {{ search_form.category.label }}
+                        {{ search_form.category(type="selectfield") }}
                     </div>
                     <div class="large-12 cell text-center">
                         {{ search_form.search_submit(type="submit", class='hollow small button', value='Найти') }}
@@ -60,6 +63,10 @@
                     </tr>
                     {% endif %}
                     <tr>
+                        <th width="100">Категория</th>
+                        <td>{{ link.category }}</td>
+                    </tr>
+                    <tr>
                         <th width="100">Автор</th>
                         <td>{{link.user.nickname}}</td>
                     </tr>
@@ -85,7 +92,7 @@
     </div>
     <div class="auto cell">
         <div class="grid-x grid-padding-x">
-            <div class="large-3 large-offset-9 cell text-right">
+            <div class="large-6 cell text-left">
                 <select onchange="window.location.href = this.options[this.selectedIndex].value">
                     {% if order=='desc' %}
                     <option value="{{ url_for('set_sort', order='desc') }}" selected>новые сверху</option>

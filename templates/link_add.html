@@ -5,13 +5,13 @@
 {% block menu %}
 <li><a href="{{url_for('links')}}">Ссылки</a></li>
 {% if current_user.is_authenticated %}
-    <li class="is-active"><a>Новая ссылка</a></li>
+<li class="is-active"><a>Новая ссылка</a></li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script src="{{ url_for('static', filename='js/req_get_title.js') }}"></script>
+
 
 <form action="" method="post" novalidate>
     {{ link_form.hidden_tag() }}
@@ -29,19 +29,18 @@
                     {{ link_form.title.label }}
                     {{ link_form.title(type="textarea", rows="3") }}
                     {% for error in link_form.title.errors %}
-                    <div class="callout alert">{{ error}}</div>
+                    <div class="callout alert">{{ error }}</div>
                     {% endfor %}
-                </div>
-                <div class="large-12 cell text-right">
-                    <button class='hollow small button' type='button' id='{{link_form.title.name}}_btn'
-                            onclick='req_get_title(id)'>Получить заголовок
-                    </button>
                 </div>
                 <div class="large-12 cell">
                     {{ link_form.comment.label }}
                     {{ link_form.comment(type="textarea", rows="3") }}
                 </div>
-                <div>{{ link_form.is_private() }} {{ link_form.is_private.label }}</div>
+                <div class="large-12 cell">
+                    {{ link_form.category.label }}
+                    {{ link_form.category(type="selectfield") }}
+                </div>
+                <div class="large-12 cell">{{ link_form.is_private() }} {{ link_form.is_private.label }}</div>
                 <div class="large-12 cell text-centre">
                     {{ link_form.link_submit(type="submit", class="button success", value='Сохранить')}}
                 </div>
