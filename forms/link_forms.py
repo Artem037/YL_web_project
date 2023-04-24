@@ -14,7 +14,8 @@ class LinkForm(FlaskForm):
     title = TextAreaField('Заголовок:', validators=[DataRequired()])
     comment = TextAreaField('Комментарий:')
     category = SelectField("Категория:", choices=["Спорт", "Новости", "Путешествия", "Самообразование",
-                                                  "Програмирование", "Фильмы"], default="Новости")
+                                                  "Програмирование", "Фильмы", "Экономика", "Культура", "Технологии",
+                                                  "Наука"], default="Новости")
     is_private = BooleanField("Личное")
 
     link_submit = SubmitField()
@@ -25,6 +26,7 @@ class LinkFormSearch(FlaskForm):
     title = StringField('Заголовок:')
     comment = StringField('Комментарий:')
     category = SelectField("Категория:", choices=["Спорт", "Новости", "Путешествия", "Самообразование",
-                                                  "Програмирование", "Фильмы"], default="Новости")
+                                                  "Програмирование", "Фильмы", "Экономика", "Культура", "Технологии",
+                                                  "Наука"], default="Новости")
 
     search_submit = SubmitField()
