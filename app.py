@@ -135,26 +135,6 @@ def link_edit(link_id):
             return redirect('/')
         else:
             abort(404)
-    # if request.method == 'POST':
-    #     if link_form.validate_on_submit():
-    #         if link_id:
-    #             # изменение данных ссылки в БД
-    #             link = db_sess.query(Link).filter(Link.id == link_id).first()
-    #             if link:
-    #                 link.link = urllib.parse.unquote(link_form.link.data)
-    #                 link.title = link_form.title.data
-    #                 link.comment = link_form.comment.data
-    #             else:
-    #                 abort(404)
-    #         else:
-    #             # Добавление данных ссылки к бд
-    #             link = Link(
-    #                 link=urllib.parse.unquote(link_form.link.data),
-    #                 title=link_form.title.data,
-    #                 comment=link_form.comment.data)
-    #             db_sess.add(link)
-    #         db_sess.commit()
-    #         return redirect('/')
     return render_template('link_add.html', title='Редактирование ссылки', link_form=link_form)
 
 
